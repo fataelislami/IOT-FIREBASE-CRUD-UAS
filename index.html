@@ -1,0 +1,194 @@
+<html>
+    <head>
+        <title>Tugas UAS IOT</title>
+        <link rel="stylesheet" href="bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <center><h3>CRUD FIREBASE - Fata El Islami - 10116499</h3></center>
+                    <hr>
+                    <h5>Tambah Data</h5>
+                    <table class="table">
+                        <tr>
+                            <td>Nama</td>
+                            <td><input style="width: 100%;" type="text" id="nama"></td>
+                        </tr>
+                        <tr>
+                            <td>Nim</td>
+                            <td><input style="width: 100%;" type="text" id="nim"></td>
+                        </tr>
+                        <tr>
+                            <td>Kelas</td>
+                            <td><input style="width: 100%;" type="text" id="kelas"></td>
+                        </tr>
+                        <tr>
+                            <td>Program Studi</td>
+                            <td><input style="width: 100%;" type="text" id="program_studi"></td>
+                        </tr>
+                        <input type="hidden" id="keyData" value="">
+                        <tr>
+                            <td>Aksi</td>
+                            <td><button style="width: 100%;" class="btn btn-primary" id="btnTambah">Tambah</button>
+                                <button style="width: 100%;display: none;" class="btn btn-primary" id="btnUpdate">Update</button>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>No</td>
+                                <td>Nama</td>
+                                <td>NIM</td>
+                                <td>Kelas</td>
+                                <td>Program Studi</td>
+                                <td>Aksi</td>
+                            </tr>
+                        </thead>
+                        <tbody id="listData">
+
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Inisialisasi
+            function clearFill(){//untuk mengosongkan field
+                $("#nama").val("");
+                $("#nim").val("");
+                $("#kelas").val("");
+                $("#program_studi").val("");
+            }
+            
+            // Mengisi nilai pada form
+            function fillData(nama,nim,kelas,program_studi,key){
+                $("#nama").val(nama);
+                $("#nim").val(nim);
+                $("#kelas").val(kelas);
+                $("#program_studi").val(program_studi);
+                $("#keyData").val(key);
+                $("#btnTambah").hide();
+                $("#btnUpdate").show();
+            }
+            // Event tombol ketika di klik
+            $("#listData").on('click','.updateField',function(){//menambahkan event klik pada table dan class UpdateModal
+                fillData($(this).attr('nama'),$(this).attr('nim'),$(this).attr('kelas'),$(this).attr('program_studi'),$(this).attr('key'));
+            });
+            $("#listData").on('click','.deleteField',function(){//menambahkan event klik pada table dan class UpdateModal
+                deleteData($(this).attr('key'));
+            });
+            $("#btnUpdate").click(function(){//event klik pada tombol update
+                alert("Update Berhasil");
+                updateData($("#nama").val(),$("#nim").val(),$("#kelas").val(),$("#program_studi").val(),$("#keyData").val())
+            });
+            $("#btnTambah").click(function(){
+                alert("Tambah Data Berhasil");
+                tambahData($("#nama").val(),$("#nim").val(),$("#kelas").val(),$("#program_studi").val(),$("#keyData").val())
+            });
+            
+
+            // CRUD
+            function tambahData(nama,nim,kelas,program_studi){
+                var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://uas-iot-599a1.firebaseio.com/data.json",
+                "method": "POST",
+                "headers": {
+                    "auth": "dK2lf6AZ9yjhm1tHbBGBas5rsb2mqasn7sO3SYXz",
+                    "cache-control": "no-cache",
+                    "Postman-Token": "ef4401c6-9ec2-4302-bfe9-82244b4bd96c"
+                },
+                "data": "{\n    \"nama\": \""+nama+"\",\n    \"kelas\": \""+kelas+"\",\n    \"nim\": "+nim+",\n    \"program_studi\": \""+program_studi+"\"\n}"
+                }
+
+                $.ajax(settings).done(function (response) {
+                console.log(response);
+                $("#listData").html("");//kosongkan list data
+                readData();//get list data terbaru
+                clearFill();//kosongkan field
+                });
+            }
+            function updateData(nama,nim,kelas,program_studi,key){
+                var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://uas-iot-599a1.firebaseio.com/data/"+key+".json",
+                "method": "PATCH",
+                "headers": {
+                    "auth": "dK2lf6AZ9yjhm1tHbBGBas5rsb2mqasn7sO3SYXz",
+                    "cache-control": "no-cache",
+                    "Postman-Token": "ef1e45a9-c78c-472a-a877-ff6c1c3e2382"
+                },
+                "data": "{\n    \"nama\": \""+nama+"\",\n    \"kelas\": \""+kelas+"\",\n    \"nim\": "+nim+",\n    \"program_studi\": \""+program_studi+"\"\n}"
+                }
+
+                $.ajax(settings).done(function (response) {
+                console.log(response);
+                $("#listData").html("");//kosongkan list data
+                readData();//get list data terbaru
+                clearFill();//kosongkan field
+                $("#btnTambah").show();
+                $("#btnUpdate").hide();
+                });
+            }
+            readData();
+            function readData(){
+                var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://uas-iot-599a1.firebaseio.com/data.json",
+                "method": "GET",
+                "headers": {
+                    "auth": "dK2lf6AZ9yjhm1tHbBGBas5rsb2mqasn7sO3SYXz",
+                    "cache-control": "no-cache",
+                    "Postman-Token": "2371a41f-a1b6-4b46-89a0-1fcc2d62392e"
+                }
+                }
+
+                $.ajax(settings).done(function (response) {
+                    // Mengambil nilai data dengan foreach
+                    var no=1;
+                    $.each( response, function( key, value ) {
+                        $("#listData").append("<tr>"
+                            +"<td>"+no+"</td>"
+                            +"<td>"+value.nama+"</td>"
+                            +"<td>"+value.nim+"</td>"
+                            +"<td>"+value.kelas+"</td>"
+                            +"<td>"+value.program_studi+"</td>"
+                            +"<td><button class='btn btn-primary updateField' key='"+key+"' nama='"+value.nama+"' nim='"+value.nim+"' kelas='"+value.kelas+"' program_studi='"+value.program_studi+"'>Update</button> | <button class='btn btn-danger deleteField' key='"+key+"'>HAPUS</button></td>"
+                        +"</tr>");
+                        no=no+1;
+                    // console.log( key + ": " + value.nama );
+                    });
+                });
+            }
+            function deleteData(key){
+                var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://uas-iot-599a1.firebaseio.com/data/"+key+".json",
+                "method": "DELETE",
+                "headers": {
+                    "auth": "dK2lf6AZ9yjhm1tHbBGBas5rsb2mqasn7sO3SYXz",
+                    "cache-control": "no-cache",
+                    "Postman-Token": "696465f6-0718-4dcd-8106-575dfad8e5a8"
+                }
+                }
+
+                $.ajax(settings).done(function (response) {
+                alert("Data berhasil dihapus");
+                $("#listData").html("");//kosongkan list data
+                readData();//get list data terbaru
+                });
+            }
+        });
+    </script>
+</html>
